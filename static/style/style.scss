@@ -1,0 +1,112 @@
+/* #ifndef APP-NVUE */
+page {  
+  line-height: 1;
+}
+/* #endif */
+
+.flex {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: row;
+}
+
+.flex-row {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: row;
+}
+
+.flex-column {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: column;
+}
+
+.flex-justify-start {
+  justify-content: flex-start;
+}
+
+.flex-justify-center {
+  justify-content: center;
+}
+
+.flex-justify-end {
+  justify-content: flex-end;
+}
+
+.flex-justify-around {
+  justify-content: space-around;
+}
+
+.flex-justify-between {
+  justify-content: space-between;
+}
+
+.flex-align-start {
+  align-items: flex-start;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.flex-align-end {
+  align-items: flex-end;
+}
+
+.flex-align-between {
+  /* #ifndef APP-NVUE */
+  align-items: space-between;
+  /* #endif */
+}
+
+.flex-align-around {
+  /* #ifndef APP-NVUE */
+  align-items: space-around;
+  /* #endif */
+}
+
+.flex-none {
+  /* #ifndef APP-NVUE */
+  flex: none;
+  /* #endif */
+  /* #ifdef APP-NVUE */
+  flex: 0;
+  /* #endif */
+}
+
+.flex-auto {
+  /* #ifndef APP-NVUE */
+  flex: auto;
+  /* #endif */
+  /* #ifdef APP-NVUE */
+  flex: 1;
+  /* #endif */
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.ellip {
+  /* #ifndef APP-NVUE */
+  white-space: nowrap;
+  /* #endif */
+  /* #ifdef APP-NVUE */
+  lines: 1;
+  /* #endif */
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.border-box {
+  /* #ifndef APP-NVUE */
+  box-sizing: border-box;
+  /* #endif */
+}

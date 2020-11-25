@@ -1,0 +1,67 @@
+{
+  "easycom": {
+    // 下载安装的方式需要前面的"@/"，npm安装的方式无需"@/"
+    // 下载安装方式
+    "^u-(.*)": "@/uview-ui/components/u-$1/u-$1.vue"
+    // npm安装方式
+    // "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+  },
+  "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    // {
+    //   "path": "pages/index/index",
+    //   "style": {
+    //     "navigationBarTitleText": "uni-app"
+    //   }
+    // },
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "copy-网易云音乐",
+        "enablePullDownRefresh": false
+      }
+    }, {
+      "path": "pages/register/register",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
+    },  {
+      "path": "pages/login/login",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
+    }, {
+      "path": "pages/category-info/category-info",
+      "style": {
+        "navigationBarTitleText": "歌单",
+        "enablePullDownRefresh": false
+      }
+
+    }, {
+      "path": "pages/music-detail/music-detail",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
+    }, {
+      "path": "pages/category-detail/category-detail",
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
+}
