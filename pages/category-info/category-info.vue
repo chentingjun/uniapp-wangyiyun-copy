@@ -42,7 +42,9 @@
           <view class="music-info flex-auto">
             <view class="info-title ellip"> <text>{{ musicInfo.title }}</text> </view>
             <view class="info-desc flex flex-align-center">
-              <text class="audio-sq">SQ</text>
+              <template v-for="(tagItem, tagItemI) in musicInfo.tags">
+                <text v-if="tagItem" :key="tagItemI" class="audio-tag">{{ tagItem }}</text>
+              </template>
               <text class="ellip">{{ musicInfo.author }}</text>
             </view>
           </view>
@@ -303,8 +305,8 @@
           margin-top: 15rpx;
           font-size: 20rpx;
 
-          .audio-sq {
-            margin-right: 10rpx;
+          .audio-tag {
+            margin-right: 5rpx;
             padding: 2rpx 5rpx;
             font-size: 12rpx;
             color: #d78889;

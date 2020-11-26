@@ -1,7 +1,8 @@
 <template>
-  <view
+  <scroll-view
     v-if="musicInfo"
     class="music-detail"
+    scroll-y
     :style="{backgroundColor: bgColor}"
   >
     <view class="music-font-bg"> {{ musicInfo && musicInfo.title }} </view>
@@ -10,19 +11,9 @@
       <text>网易云音乐</text>
     </view>
     <view class="cd-wrapper">
-      <view
-        class="cd-bg"
-        :animation="animationData"
-        :style="{backgroundImage: `url(${musicInfo && musicInfo.posters})`}"
-      ></view>
-      <audio-player
-        size="150rpx"
-        color="#fff"
-        class="btn-player"
-        :src="musicInfo.src"
-        @onplay="playCd"
-        @onpause="pauseCd"
-      />
+      <view class="cd-bg" :animation="animationData" :style="{backgroundImage: `url(${musicInfo && musicInfo.posters})`}">
+      </view>
+      <audio-player size="150rpx" color="#fff" class="btn-player" :src="musicInfo.src" @onplay="playCd" @onpause="pauseCd" />
     </view>
     <!-- #ifdef MP-WEIXIN -->
     <button open-type="share" class="btn-share">
@@ -30,8 +21,9 @@
       <text>分享给微信好友</text>
     </button>
     <!-- #endif -->
-    <comments :list="comments"></comments>
-  </view>
+    <view class="comment-title">精彩评论</view>
+    <comments :list="musicComments"></comments>
+  </scroll-view>
 </template>
 
 <script>
@@ -47,12 +39,16 @@
         animationRotate: 0,
         musicInfo: null,
         isPlaying: false,
-        comments: [],
+        musicComments: [],
       }
     },
-    onLoad({ id, bgcolor }) {
+    onLoad({
+      id,
+      bgcolor
+    }) {
       if (id) {
         this.getMusicDetail(id)
+        this.getMusicComments(id)
       }
       this.initAnimation()
       this.initBg(bgcolor)
@@ -87,7 +83,9 @@
         })
       },
       async getMusicDetail(id) {
-        const res = await this.$http.getMusicDetail({id})
+        const res = await this.$http.getMusicDetail({
+          id
+        })
         console.log('res ->', res)
         this.musicInfo = res
         uni.setNavigationBarTitle({
@@ -95,16 +93,10 @@
         })
       },
       async getMusicComments(id) {
-        // const res = await this.$http.getMusicDetail({id})
-        // console.log('res ->', res)
-        this.musicComments = [
-          {
-            name: 'name',
-            createTime: '2020年11月23日',
-            zan: '431',
-            content: 'hello world'
-          }
-        ]
+        const list = await this.$http.getMusicComments({id, limit: 10})
+        console.log('list ->', list)
+        this.musicComments = list
+
       },
       playCd() {
         console.log('开始动画：this.animationRotate: ', this.animationRotate)
@@ -131,20 +123,23 @@
     width: 100vw;
     overflow: hidden;
     perspective: 10000;
+
     .music-font-bg {
       position: absolute;
       top: 45%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(45deg) scale(5, 15);
-      color: rgba($color: red, $alpha: .7);
+      color: transparent;
       text-shadow: 5rpx 5rpx 5rpx #FF0000;
       z-index: -1000;
     }
+
     .title-tip {
       color: #fff;
       padding-top: 20rpx;
       padding-left: 20rpx;
     }
+
     .iconmusic {
       color: #fff;
       background-color: #c52d25;
@@ -152,6 +147,7 @@
       padding: 4rpx;
       margin-right: 10rpx;
     }
+
     .cd-wrapper {
       position: relative;
       display: flex;
@@ -164,32 +160,36 @@
       margin-left: 125rpx;
       margin-top: 100rpx;
       border-radius: 50%;
+
       @keyframes cdplay {
         from {
           transform: rotate(0deg);
         }
+
         to {
           transform: rotate(360deg);
         }
       }
+
       .cd-bg {
-        position: absolute;
         width: 350rpx;
         height: 350rpx;
         border-radius: 50%;
         background-size: contain;
-        // transform: rotate(0);
-        // animation: cdplay 15s linear infinite;
-        // animation-play-state: paused;
-        z-index: 0;
       }
+
       .btn-player {
+        position: absolute;
         color: red;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         border-radius: 50%;
         box-shadow: 0 0 40rpx #ccc inset;
         z-index: 1;
       }
     }
+
     .btn-share {
       display: flex;
       align-items: center;
@@ -202,15 +202,23 @@
       color: #fff;
       border: 2rpx solid #fff;
       background-color: rgba($color: #000, $alpha: .1);
-    
+
       &::after {
         border: 0;
       }
-    
+
       .iconhuaban19 {
         margin-right: 10rpx;
         font-size: 28rpx;
       }
+    }
+    .comment-title {
+      color: #fff;
+      font-size: 32rpx;
+      margin-top: 50rpx;
+      margin-left: 30rpx;
+      font-weight: 700;
+      margin-bottom: 40rpx;
     }
   }
 </style>
