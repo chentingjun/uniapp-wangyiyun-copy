@@ -1,71 +1,110 @@
 <template>
   <scroll-view
-    v-if="musicInfo"
     class="music-detail"
     scroll-y
     :style="{backgroundColor: bgColor}"
   >
-    <view class="music-font-bg"> {{ musicInfo && musicInfo.title }} </view>
-    <view class="title-tip">
-      <text class="iconfont iconmusic"></text>
-      <text>网易云音乐</text>
-    </view>
-    <view class="cd-wrapper">
-      <view class="cd-bg" :animation="animationData" :style="{backgroundImage: `url(${musicInfo && musicInfo.posters})`}">
+    <template v-if="musicInfo">
+      <view class="music-font-bg"> {{ musicInfo && musicInfo.title }} </view>
+      <view class="title-tip">
+        <text class="iconfont iconmusic"></text>
+        <text>网易云音乐</text>
       </view>
-      <audio-player size="150rpx" color="#fff" class="btn-player" :src="musicInfo.src" @onplay="playCd" @onpause="pauseCd" />
+      <view class="cd-wrapper">
+        <view
+          class="cd-bg"
+          :animation="animationData"
+          :style="{backgroundImage: `url(${musicInfo && musicInfo.posters})`}"
+        >
+          <view class="black-center"></view>
+        </view>
+        <!-- 一个页面只需要一个播放器，这个暂时不需要 -->
+        <!-- <audio-player size="150rpx" color="#fff" class="btn-player" :src="musicInfo.src" @onplay="playCd" @onpause="pauseCd" /> -->
+      </view>
+      <view>
+        
+      </view>
+      <view class="audio-control-plugin">
+        <u-sticky
+          offset-top="20"
+          bg-color="transparent"
+        >
+          <imt-audio
+            :src="'https://music.163.com/song/media/outer/url?id=1614278.mp3' || musicInfo.src"
+            :autoplay="playState > 0"
+            :color="bgColor"
+            :prev-disable="currentIndex === 0"
+            :next-disable="currentIndex === total - 1"
+            :audio-state.sync="audioState"
+            @onplay="playCd"
+            @onended="audioEnded"
+            @onpaused="pauseCd"
+            @prev="playPrev"
+            @next="playNext"
+          ></imt-audio>
+        </u-sticky>
+      </view>
+      <!-- #ifdef MP-WEIXIN -->
+      <button open-type="share" class="btn-share">
+        <text class="iconfont iconhuaban19"></text>
+        <text>分享给微信好友</text>
+      </button>
+      <!-- #endif -->
+      <view class="comment-title">精彩评论</view>
+      <comments class="use-comp-comments" :list="musicComments"></comments>
+    </template>
+    <view v-if="!musicInfo && !isLoadingDetail" class="no-music">
+      未找到歌曲
     </view>
-    <!-- #ifdef MP-WEIXIN -->
-    <button open-type="share" class="btn-share">
-      <text class="iconfont iconhuaban19"></text>
-      <text>分享给微信好友</text>
-    </button>
-    <!-- #endif -->
-    <view class="comment-title">精彩评论</view>
-    <comments :list="musicComments"></comments>
   </scroll-view>
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   export default {
     name: 'music-detail',
     data() {
       return {
-        bgColor: '#000000',
-        animation: null,
-        animationData: null,
-        playTimer: null,
-        animationDuration: 20,
-        animationRotate: 0,
+        audioState: '',
+        isLoadingDetail: true,
+        total: 0,
         musicInfo: null,
         isPlaying: false,
+        animation: null,
+        animationData: {},
+        aniRotate: 0,
+        aniDuration: 25, // aniDuration * 360 实际一圈动画的时间
+        aniTimer: null,
         musicComments: [],
       }
     },
-    onLoad({
-      id,
-      bgcolor
-    }) {
-      if (id) {
-        this.getMusicDetail(id)
-        this.getMusicComments(id)
-      }
-      this.initAnimation()
-      this.initBg(bgcolor)
+    computed: {
+      ...mapState({
+        categoryId: state => state.musicDetailInfo.categoryId,
+        bgColor: state => state.musicDetailInfo.bgColor || '#000000',
+        currentIndex: state => state.musicDetailInfo.offset || 0,
+        // 0仅加载当前不播放，1仅播放当前，2顺序播放后面所有
+        playState: state => state.musicDetailInfo.playState || 0,
+      }),
+    },
+    mounted() {
+      this.initBg(this.bgColor)
+      this.getMusicDetail()
+      this.initCDAnimation()
     },
     onShow() {
       console.log('music-detail onShow')
+      this.audioState = 'play'
     },
     onHide() {
       console.log('music-detail onHide')
+      this.audioState = 'stop'
     },
     onUnload() {
       console.log('music-detail onUnload')
-      clearInterval(this.playTimer)
     },
     methods: {
       initBg(color) {
-        this.bgColor = color
         uni.setNavigationBarColor({
           frontColor: '#ffffff',
           backgroundColor: this.bgColor,
@@ -76,41 +115,80 @@
         })
         // #endif
       },
-      initAnimation() {
+      initCDAnimation() {
+        if (this.aniTimer) clearInterval(this.aniTimer)
+        this.animationData = {}
+        this.aniRotate = 0
         this.animation = uni.createAnimation({
-          timingFunction: "linear",
-          duration: this.animationDuration,
+          duration: this.aniDuration,
         })
+        if (this.animation) {
+          this.animation.rotate(this.aniRotate).step()
+          this.animationData = this.animation.export()
+        }
       },
-      async getMusicDetail(id) {
-        const res = await this.$http.getMusicDetail({
-          id
-        })
-        console.log('res ->', res)
-        this.musicInfo = res
-        uni.setNavigationBarTitle({
-          title: res.title,
-        })
+      async getMusicDetail() {
+        this.isLoadingDetail = true
+        uni.showLoading({title: '加载中...'})
+        try{
+          const { list, total } = await this.$store.dispatch('updateMusicListByCategory', {
+            id: this.categoryId, offset: this.currentIndex, limit: 1
+          })
+          if (list && list.length > 0) {
+            this.total = total
+            this.musicInfo = list[0]
+            uni.setNavigationBarTitle({
+              title: this.musicInfo.title,
+            })
+            this.getMusicComments(this.musicInfo._id)
+          }
+          this.isLoadingDetail = false
+          uni.hideLoading()
+        }catch(e){
+          //TODO handle the exception
+          this.isLoadingDetail = false
+          uni.hideLoading()
+        }
       },
       async getMusicComments(id) {
         const list = await this.$http.getMusicComments({id, limit: 10})
-        console.log('list ->', list)
         this.musicComments = list
-
       },
       playCd() {
-        console.log('开始动画：this.animationRotate: ', this.animationRotate)
-        this.animation.rotate(this.animationRotate).step()
-        this.animationData = this.animation.export()
-        this.playTimer = setInterval(() => {
-          this.animationRotate += 1
-          console.log('循环动画：this.animationRotate: ', this.animationRotate)
-          this.animation.rotate(this.animationRotate).step()
-          this.animationData = this.animation.export()
-        }, this.animationDuration)
+        if (this.animation) {
+          this.aniTimer = setInterval(() => {
+            this.aniRotate += 1
+            this.animation.rotate(this.aniRotate).step()
+            this.animationData = this.animation.export()
+          }, this.aniDuration)
+        }
       },
       pauseCd() {
-        clearInterval(this.playTimer)
+        clearInterval(this.aniTimer)
+      },
+      async playPrev() {
+        this.initCDAnimation()
+        console.log('play prev')
+        let musicIndex = this.currentIndex - 1
+        if (musicIndex < 0) return
+        await this.$store.commit('updateMusicDetailInfo', {offset: musicIndex})
+        await this.getMusicDetail()
+        this.audioState = 'reload'
+      },
+      async playNext() {
+        this.initCDAnimation()
+        console.log('play next')
+        let musicIndex = this.currentIndex + 1
+        if (musicIndex > this.total - 1) return
+        await this.$store.commit('updateMusicDetailInfo', {offset: musicIndex, playState: 2})
+        await this.getMusicDetail()
+        this.audioState = 'reload'
+      },
+      async audioEnded() {
+        this.initCDAnimation()
+        if (this.playState === 2) {
+          this.playNext()
+        }
       },
     }
   }
@@ -123,6 +201,13 @@
     width: 100vw;
     overflow: hidden;
     perspective: 10000;
+    
+    .no-music {
+      color: #fff;
+      font-size: 64rpx;
+      padding-top: 100rpx;
+      text-align: center;
+    }
 
     .music-font-bg {
       position: absolute;
@@ -153,7 +238,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #fff;
+      background-color: #000;
       box-sizing: border-box;
       width: 500rpx;
       height: 500rpx;
@@ -162,20 +247,28 @@
       border-radius: 50%;
 
       @keyframes cdplay {
-        from {
-          transform: rotate(0deg);
-        }
-
-        to {
-          transform: rotate(360deg);
-        }
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
       }
 
       .cd-bg {
-        width: 350rpx;
-        height: 350rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 420rpx;
+        height: 420rpx;
         border-radius: 50%;
         background-size: contain;
+        .black-center {
+          box-sizing: border-box;
+          width: 100rpx;
+          height: 100rpx;
+          background-color: rgba($color: #ffffff, $alpha: .6);
+          border-radius: 50%;
+          border-width: 40rpx;
+          border-style: solid;
+          border-color: rgba($color: #000000, $alpha: .8);
+        }
       }
 
       .btn-player {
@@ -190,11 +283,15 @@
       }
     }
 
+    .audio-control-plugin {
+      margin: 30rpx 30rpx 30rpx;
+    }
+    
     .btn-share {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 300rpx;
+      margin-top: 30rpx;
       width: 300rpx;
       border-radius: 50rpx;
       height: 60rpx;

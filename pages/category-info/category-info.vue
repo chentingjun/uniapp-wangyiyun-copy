@@ -27,7 +27,7 @@
     </button>
     <!-- #endif -->
     <view class="music-wrapper">
-      <view class="music-wrapper-header flex flex-align-center" @click="toMusicDetail(musicList[0]._id)">
+      <view class="music-wrapper-header flex flex-align-center" @click="toMusicDetail(0, 2)">
         <text class="iconfont iconbofang1"></text>
         <text>播放全部</text>
         <text class="play-all-tip">（共{{ totalCount }}首）</text>
@@ -36,10 +36,9 @@
         <view
           :key="musicInfoI"
           class="music-item flex flex-justify-between"
-          @click="toMusicDetail(musicInfo._id)"
         >
           <view class="music-num border-box"><text>{{ musicInfoI + 1 }}</text></view>
-          <view class="music-info flex-auto">
+          <view class="music-info flex-auto" @click="toMusicDetail(musicInfoI, 2)">
             <view class="info-title ellip"> <text>{{ musicInfo.title }}</text> </view>
             <view class="info-desc flex flex-align-center">
               <template v-for="(tagItem, tagItemI) in musicInfo.tags">
@@ -49,7 +48,7 @@
             </view>
           </view>
           <!-- <audio-player class="btn-player flex-none" :src="musicInfo.src" /> -->
-          <text class="iconfont iconbofang"></text>
+          <text class="iconfont iconbofang" @click="toMusicDetail(musicInfoI, 2)"></text>
         </view>
       </template>
       <view class="loading-wrapper">
@@ -127,19 +126,15 @@
       async getMusicListByCategory() {
         if (!this.categoryId) return
         this.loadStatus = 'loading'
-        const res = await this.$http.getMusicListByCategory({
-          id: this.categoryId,
-          offset: this.offset,
-          limit: this.limit,
+        const { offset, total, list} = await this.$store.dispatch('updateMusicListByCategory', {
+          id: this.categoryId, offset: this.offset, limit: this.limit
         })
-        if (res) {
-          this.musicList.push(...res.list) 
-          this.totalCount = res.count
-          this.offset = this.offset + this.limit
-          if (this.offset >= this.totalCount) {
-            this.loadStatus = 'nomore'
-            return
-          }
+        this.musicList.push(...list)
+        this.totalCount = total
+        this.offset = offset
+        if (this.offset >= this.totalCount) {
+          this.loadStatus = 'nomore'
+          return
         }
         this.loadStatus = 'loading'
       },
@@ -148,10 +143,15 @@
           url: `/pages/category-detail/category-detail?id=${this.categoryId}`
         })
       },
-      toMusicDetail(id) {
-        const color = this.categoryInfo.detailBgColor
+      toMusicDetail(musicIndex, state) {
+        this.$store.commit('updateMusicDetailInfo', {
+          categoryId: this.categoryId,
+          offset: musicIndex,
+          bgColor: this.categoryInfo.detailBgColor,
+          playState: state
+        })
         uni.navigateTo({
-          url: `/pages/music-detail/music-detail?id=${id}&bgcolor=${color}`
+          url: `/pages/music-detail/music-detail`
         })
       }
     }

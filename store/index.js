@@ -20,7 +20,8 @@ const store = new Vuex.Store({
       // 存储指定数据
       reducer(state) {
         return {
-          userinfo: state.userinfo
+          userinfo: state.userinfo,
+          musicDetailInfo: state.musicDetailInfo,
         }
       }
     })

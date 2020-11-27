@@ -43,6 +43,7 @@
 
 <style lang="scss" scoped>
   .comp-comments {
+    padding-bottom: 20rpx;
     .comment-item {
       margin: 30rpx;
     }
@@ -97,7 +98,7 @@
       align-items: center;
       justify-content: center;
       width: 690rpx;
-      margin: 30rpx auto 50rpx;
+      margin: 30rpx auto;
       height: 70rpx;
       border-radius: 70rpx;
     }
