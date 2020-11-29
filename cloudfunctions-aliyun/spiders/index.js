@@ -1,40 +1,26 @@
 'use strict';
-const cheerio = require('cheerio')
-const http = require('./http')
-const clearTable = require('./clearTable')
-
+// 音乐列表文档对象
+const clcMusicList = require('collection-for-music-list')
 const db = uniCloud.database()
-
-async function spider(url) {
-  try{
-    const html = await http(url)
-    const $ = cheerio.load(html)
-    const musicList = []
-    const list = Array.from($('.SoundBox'))
-    list.forEach((item) => {
-      const src = $(item).find('.SoundDiskBox').attr('data-mp3')
-      const title = $(item).find('.SoundTitle').text()
-      musicList.push({
-        title,
-        src: `http://img.51miz.com/${src}`,
-      })
-    })
-    return musicList
-  }catch(e){
-    //TODO handle the exception
-    console.log('spider e: ', e)
-  }
-  return []
-}
-
+const clearTable = require('./clearTable')
+const spideXimalaya = require('./spide-ximalaya.js')
 exports.main = async (event, context) => {
   // 清空表
-  await clearTable('spider-music-list')
-  //event为客户端上传的参数
-  const target = 'https://www.51miz.com/sound/?utm_term=1683055&utm_source=baidu&bd_vid=11482282509769348539'
-  const musicList = await spider(target)
-  const clc = db.collection('spider-music-list')
+  await clearTable('music-list-for-ximalaya')
+	const fetchRes = await clcMusicList.limit(500).get()
+  const musicList = Array.from(fetchRes.data)
+  const spiderList = await spideXimalaya()
+  for (let i = 0; i < musicList.length; i++) {
+    const spiderItem = spiderList[i]
+    musicList[i] = {
+      ...musicList[i],
+      ...spiderItem
+    }
+  }
+  const clc = db.collection('music-list-for-ximalaya')
   const res = await clc.add(musicList)
-  //返回数据给客户端
-  return res
+  return  {
+    data: res,
+    message: ''
+  }
 };

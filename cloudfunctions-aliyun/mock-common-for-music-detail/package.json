@@ -1,0 +1,17 @@
+{
+  "name": "mock-common-for-music-detail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "clear-collection": "file:../common/clear-collection",
+    "get-all-list": "file:../common/get-all-list",
+    "hello-mock": "file:../common/hello-mock"
+  }
+}

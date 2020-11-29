@@ -1,0 +1,18 @@
+{
+  "name": "spider-music-list-for-ximalaya",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "clear-collection": "file:../common/clear-collection",
+    "collection-for-music-list": "file:../common/collection-for-music-list",
+    "hello-mock": "file:../common/hello-mock",
+    "http-for-spider": "file:../common/http-for-spider"
+  }
+}

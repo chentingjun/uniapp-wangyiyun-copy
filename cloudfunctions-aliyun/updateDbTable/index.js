@@ -63,7 +63,7 @@ async function makeMusicData(ids) {
 
 exports.main = async (event, context) => {
   //event为客户端上传的参数
-  const list = await getAllList('music-list', 0, 50)
+  const list = await getAllList('music-list-for-ximalaya', 0, 50)
   const ids = list.map(item => item._id)
   const res = await makeMusicData(ids)
   //返回数据给客户端

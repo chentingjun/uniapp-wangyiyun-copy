@@ -1,13 +1,14 @@
 'use strict';
+// 音乐列表文档对象
+const clcMusicList = require('collection-for-music-list')
 
 const db = uniCloud.database()
 
 const getCategoryMusicList = async (options) => {
 	//event为客户端上传的参数
   const { id: categoryId, limit = 0 } = options
-	const collection = db.collection('music-list')
   const filter = { categoryId }
-  const result = await collection.where(filter).limit(limit).get()
+  const result = await clcMusicList.where(filter).limit(limit).get()
   const info = result.data || []
   return info
 };
