@@ -47,6 +47,7 @@
     },
     props: {
       src: String, //音频链接
+      onHide: Boolean, // 页面是否隐藏
       // 前一个禁用
       prevDisable: Boolean,
       // 后一个禁用
@@ -101,12 +102,6 @@
         const second = `0${Math.ceil(allsecond % 60)}`.substr(-2)
         return `${minutes}:${second}`
       }
-    },
-    onShow() {
-      console.log('imt-audio onShow')
-    },
-    onHide() {
-      console.log('imt-audio onShow')
     },
     methods: {
       initAudio() {
@@ -172,6 +167,10 @@
       onCanplay() {
         console.log('可以播放了')
         // 如果是自动播放 或 切歌 则自动播放
+        if (this.onHide) {
+          console.log('is hide')
+          return
+        }
         if (this.autoplay || !this.paused) {
           this.play()
         }

@@ -11,6 +11,8 @@
         <text>网易云音乐</text>
       </view>
       <view class="cd-wrapper">
+        <view class="cd-needle-bar"></view>
+        <view class="cd-needle" :class="{playing: aniTimer}"></view>
         <view
           class="cd-bg"
           :animation="animationData"
@@ -30,7 +32,8 @@
           bg-color="transparent"
         >
           <imt-audio
-            :src="'https://music.163.com/song/media/outer/url?id=1614278.mp3' || musicInfo.src"
+            :on-hide="pageIsHide"
+            :src="musicInfo.src"
             :autoplay="playState > 0"
             :color="bgColor"
             :prev-disable="currentIndex === 0"
@@ -66,6 +69,7 @@
     data() {
       return {
         audioState: '',
+        pageIsHide: false,
         isLoadingDetail: true,
         total: 0,
         musicInfo: null,
@@ -93,10 +97,12 @@
       this.initCDAnimation()
     },
     onShow() {
+      this.pageIsHide = false
       console.log('music-detail onShow')
       this.audioState = 'play'
     },
     onHide() {
+      this.pageIsHide = true
       console.log('music-detail onHide')
       this.audioState = 'stop'
     },
@@ -155,6 +161,7 @@
         this.musicComments = list
       },
       playCd() {
+        clearInterval(this.aniTimer)
         if (this.animation) {
           this.aniTimer = setInterval(() => {
             this.aniRotate += 1
@@ -165,6 +172,7 @@
       },
       pauseCd() {
         clearInterval(this.aniTimer)
+        this.aniTimer = null
       },
       async playPrev() {
         this.initCDAnimation()
@@ -250,7 +258,31 @@
         from {transform: rotate(0deg);}
         to {transform: rotate(360deg);}
       }
-
+      .cd-needle-bar {
+        position: absolute;
+        right: -26rpx;
+        top: 0;
+        width: 36rpx;
+        height: 36rpx;
+        background-image: url(../../static/cd-needle-bar.png);
+        background-size: 100%;
+      }
+      .cd-needle {
+        position: absolute;
+        right: -14rpx;
+        top: 20rpx;
+        display: block;
+        width: 54rpx;
+        height: 218rpx;
+        background-image: url(../../static/cd-needle.png);
+        background-size: 100%;
+        transition: all .3s;
+        transform-origin: top;
+        transform: rotateZ(-20deg);
+      }
+      .cd-needle.playing {
+        transform: rotateZ(0);
+      }
       .cd-bg {
         display: flex;
         align-items: center;
