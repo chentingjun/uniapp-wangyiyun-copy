@@ -26,7 +26,7 @@
       </view>
     </template>
     <view class="copyright">
-      @ 数据来源喜马拉雅
+      @ 数据来源喜马拉雅，界面模仿网易云
     </view>
   </view>
 </template>
