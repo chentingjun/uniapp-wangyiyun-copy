@@ -1,3 +1,6 @@
 /unpackage/
 /package-lock.json
-/node_modules/
+# 忽略所有的 node_modules 目录
+node_modules/
+# 不忽略 /cloudfunctions-aliyun/updateDbTable/ 下有 node_modules
+!/cloudfunctions-aliyun/updateDbTable/node_modules
