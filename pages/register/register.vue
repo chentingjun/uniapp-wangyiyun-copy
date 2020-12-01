@@ -21,7 +21,12 @@
         type="password"
       >
       </u-field>
-      <u-button class="btn-registe" @click="handleRegiste">注册</u-button>
+      <view class="btn-registe">
+        <u-button @click="handleRegiste">注册</u-button>
+      </view>
+      <view class="btn-back flex flex-justify-end">
+        <text style="color: #2B85E4;" @click="handleBack">暂不注册</text>
+      </view>
     </view>
     <u-toast ref="uToast" />
   </view>
@@ -38,6 +43,11 @@
       }
     },
     methods: {
+      handleBack() {
+        uni.navigateTo({
+          url: '../home/home'
+        })
+      },
       handleRegiste() {
         const params = {
           username: this.username,
@@ -70,6 +80,12 @@
     width: 750rpx;
   }
   .btn-registe {
+    width: 650rpx;
+    margin-top: 50rpx;
+    margin-left: 50rpx;
+    margin-right: 50rpx;
+  }
+  .btn-back {
     width: 650rpx;
     margin-top: 50rpx;
     margin-left: 50rpx;

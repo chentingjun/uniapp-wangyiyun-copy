@@ -2,9 +2,9 @@
   <view class="comp-login flex flex-align-center flex-justify-between">
     <view class="user-status flex flex-align-center">
       <image
-        v-if="userinfo && userinfo.image"
+        v-if="userinfo && userinfo.avatar"
         class="user-image"
-        :src="userinfo.image"
+        :src="userinfo.avatar"
       />
       <text v-else class="iconfont iconren"></text>
       <text :class="{'is-login': userinfo}">{{ userName }}</text>
@@ -60,7 +60,7 @@
   margin-right: 10rpx;
 }
 .is-login {
-  color: #eb5843;
+  color: #010101;
   font-size: 36rpx;
 }
 .iconren {

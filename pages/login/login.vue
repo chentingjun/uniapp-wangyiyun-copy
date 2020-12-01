@@ -18,8 +18,12 @@
       <view class="btn-wrapper">
         <u-button class="btn-login" @click="handleLogin">登录</u-button>
       </view>
-      <view class="btn-register flex flex-justify-end" @click="handleRegiste">
-        <text style="color: #2B85E4;">没有账号？去注册</text>
+      <view class="btn-register flex flex-justify-between">
+        <text style="color: #2B85E4;" @click="handleNoLogin">暂不登录</text>
+        <!-- #ifdef MP-WEIXIN -->
+        <button class="wx-login" open-type="getUserInfo" @getuserinfo="loginWithWx">微信账号快捷登录</button>
+        <!-- #endif -->
+        <text style="color: #2B85E4;" @click="handleRegiste">没有账号？去注册</text>
       </view>
     </view>
     <u-toast ref="uToast" />
@@ -45,10 +49,10 @@
         }
         uni.showLoading({title: '登录中...'})
         try{
-          const userinfo = await this.$http.login(params)
+          const userInfo = await this.$http.login(params)
           uni.hideLoading()
-          if (userinfo) {
-            this.$store.commit('updateUserInfo', userinfo)
+          if (userInfo) {
+            this.$store.commit('updateUserInfo', userInfo)
           }
           this.$refs.uToast.show({
             title: '登录成功',
@@ -63,7 +67,39 @@
           //TODO handle the exception
         }
       },
-      
+      // #ifdef MP-WEIXIN
+      async loginWithWx({ detail }) {
+        console.log('detail ->', detail)
+        const { nickName, avatarUrl, ...otherUserInfo } = detail.userInfo || {}
+        try{
+          const userInfo = await this.$http.login({
+            loginType: 'wx',
+            username: nickName,
+            avatar: avatarUrl,
+            ...otherUserInfo,
+          })
+          if (userInfo) {
+            this.$store.commit('updateUserInfo', userInfo)
+          }
+          this.$refs.uToast.show({
+            title: '登录成功',
+            type: 'success',
+            duration: '1000',
+            callback: () => {
+              uni.redirectTo({url: '/pages/home/home',})
+            }
+          })
+        }catch(e){
+          //TODO handle the exception
+          console.log('wx 登录失败', e)
+        }
+      },
+      // #endif
+      handleNoLogin() {
+        uni.redirectTo({
+          url: '../home/home'
+        })
+      },
       handleRegiste() {
         uni.redirectTo({
           url: '../register/register'
@@ -89,5 +125,17 @@
   .btn-register {
     margin-top: 20rpx;
     margin-right: 50rpx;
+    margin-left: 50rpx;
   }
+  /* #ifdef MP-WEIXIN */
+  .wx-login {
+    font-size: 28rpx;
+    background-color: transparent;
+    color: #2B85E4;
+    line-height: inherit;
+    &::after {
+      border: 0;
+    }
+  }
+  /* #endif */
 </style>
