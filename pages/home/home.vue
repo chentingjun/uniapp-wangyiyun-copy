@@ -25,6 +25,9 @@
         <music-category :category-data="categoryItem" />
       </view>
     </template>
+    <view class="copyright">
+      @ 数据来源喜马拉雅
+    </view>
   </view>
 </template>
 
@@ -114,5 +117,13 @@
 
   .category-item {
     margin-top: $spaceHeight;
+  }
+  .copyright {
+    text-align: center;
+    margin-top: 30rpx;
+    border-top: 1px solid #ccc;
+    padding-top: 25rpx;
+    font-size: 20rpx;
+    color: #cecece;
   }
 </style>
