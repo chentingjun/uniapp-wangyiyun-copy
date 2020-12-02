@@ -1,6 +1,9 @@
 <template>
   <view class="comp-login flex flex-align-center flex-justify-between">
-    <view class="user-status flex flex-align-center">
+    <view
+      class="user-status flex flex-align-center"
+      @click="toSetting"
+    >
       <image
         v-if="userinfo && userinfo.avatar"
         class="user-image"
@@ -41,6 +44,13 @@
         } else {
           uni.redirectTo({
             url: '/pages/login/login'
+          })
+        }
+      },
+      toSetting() {
+        if (this.userinfo) {
+          uni.navigateTo({
+            url: '../../pages/setting/setting'
           })
         }
       },

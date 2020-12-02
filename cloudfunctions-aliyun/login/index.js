@@ -28,6 +28,8 @@ exports.main = async (event, context) => {
     }
   }
   if (loginType === 'wx') {
+    // 添加 wx 用户信息
+    userInfo.createTime = new Date().getTime()
     await collection.add(userInfo)
     return {
       data: {

@@ -1,6 +1,7 @@
 <template>
   <view class="login flex-column flex-align-center">
-    <image class="logo" src="/static/logo.png"></image>
+    <!-- <image class="logo" src="/static/logo.png"></image> -->
+    <text class="iconfont iconcrew_feature"></text>
     <view class="input-form">
       <u-field
         v-model="username"
@@ -69,7 +70,7 @@
       },
       // #ifdef MP-WEIXIN
       async loginWithWx({ detail }) {
-        console.log('detail ->', detail)
+        uni.showLoading({title: '登录中...'})
         const { nickName, avatarUrl, ...otherUserInfo } = detail.userInfo || {}
         try{
           const userInfo = await this.$http.login({
@@ -78,6 +79,7 @@
             avatar: avatarUrl,
             ...otherUserInfo,
           })
+          uni.hideLoading()
           if (userInfo) {
             this.$store.commit('updateUserInfo', userInfo)
           }
@@ -110,11 +112,18 @@
 </script>
 
 <style lang="scss" scoped>
-  .logo {
-    height: 200rpx;
-    width: 200rpx;
-    margin-top: 200rpx;
-    margin-bottom: 50rpx;
+  // .logo {
+  //   height: 200rpx;
+  //   width: 200rpx;
+  //   margin-top: 200rpx;
+  //   margin-bottom: 50rpx;
+  // }
+  .iconcrew_feature {
+    font-size: 200rpx;
+    margin-top: 150rpx;
+    margin-bottom: 80rpx;
+    color: #d80000;
+    text-shadow: 0 0rpx 80rpx #d80000;
   }
   .input-form {
     width: 750rpx;

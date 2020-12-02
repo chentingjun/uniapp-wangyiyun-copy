@@ -17,8 +17,9 @@ exports.main = async (event, context) => {
   }
 	console.log('注册云函数 registe : ', event)
   const collection = db.collection('users')
+  const createTime = new Date().getTime()
   const res = await collection.add({
-    username, password
+    username, password, createTime
   })
 	//返回数据给客户端
 	return {

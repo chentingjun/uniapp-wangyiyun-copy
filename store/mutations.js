@@ -1,7 +1,14 @@
 const mutations = {
-  updateUserInfo(state, info = null) {
+  updateUserInfo(state, info) {
     console.log('设置用户信息：', info)
-    state.userinfo = info
+    if (info) {
+      state.userinfo = {
+        ...state.userinfo,
+        ...info,
+      }
+    } else {
+      state.userinfo = null
+    }
   },
   updateMusicDetailInfo(state, info = {}) {
     console.log('设置歌曲详情信息：', info)
