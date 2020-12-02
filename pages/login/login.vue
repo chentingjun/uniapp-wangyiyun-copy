@@ -21,11 +21,16 @@
       </view>
       <view class="btn-register flex flex-justify-between">
         <text style="color: #2B85E4;" @click="handleNoLogin">暂不登录</text>
-        <!-- #ifdef MP-WEIXIN -->
-        <button class="wx-login" open-type="getUserInfo" @getuserinfo="loginWithWx">微信账号快捷登录</button>
-        <!-- #endif -->
         <text style="color: #2B85E4;" @click="handleRegiste">没有账号？去注册</text>
       </view>
+      <!-- #ifdef MP-WEIXIN -->
+      <u-divider style="margin-bottom: 50rpx;">第三方登录</u-divider>
+      <view class="login-with-wrapper">
+        <button class="wx-login btn" open-type="getUserInfo" @getuserinfo="loginWithWx">
+          <text class="iconfont iconweixin"></text>
+        </button>
+      </view>
+      <!-- #endif -->
     </view>
     <u-toast ref="uToast" />
   </view>
@@ -132,18 +137,27 @@
     padding: 50rpx;
   }
   .btn-register {
-    margin-top: 20rpx;
-    margin-right: 50rpx;
-    margin-left: 50rpx;
+    margin: 20rpx 50rpx 80rpx;
   }
   /* #ifdef MP-WEIXIN */
-  .wx-login {
-    font-size: 28rpx;
-    background-color: transparent;
-    color: #2B85E4;
-    line-height: inherit;
-    &::after {
-      border: 0;
+  .login-with-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .btn {
+      margin: 30rpx;
+    }
+    .iconweixin {
+      font-size: 60rpx;
+    }
+    .wx-login {
+      padding: 0;
+      background-color: transparent;
+      color: #2B85E4;
+      line-height: inherit;
+      &::after {
+        border: 0;
+      }
     }
   }
   /* #endif */
