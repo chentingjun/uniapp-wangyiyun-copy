@@ -1,6 +1,6 @@
 {
     "name" : "uniapp-wangyiyun-copy",
-    "appid" : "__UNI__870F602",
+    "appid" : "__UNI__********",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -62,7 +62,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxd65cc7478fcff57f",
+        "appid" : "wx************",
         "setting" : {
             "urlCheck" : false,
             "postcss" : true,
